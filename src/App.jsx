@@ -471,6 +471,28 @@ export default function OrgChartApp() {
     setIsDragging(false);
   };
 
+  const handleCanvasTouchStart = (e) => {
+    if (e.target === e.currentTarget || e.target.closest('.org-chart-container')) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({ x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y });
+    }
+  };
+
+  const handleCanvasTouchMove = (e) => {
+    if (isDragging && e.touches.length > 0) {
+      const touch = e.touches[0];
+      setPanOffset({
+        x: touch.clientX - dragStart.x,
+        y: touch.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleCanvasTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   const handleEditCompanyName = () => {
     setCompanyNameInput(companyName);
     setShowCompanyNameModal(true);
@@ -1241,14 +1263,17 @@ export default function OrgChartApp() {
           </div>
         </div>
 
-        <div 
-          className="flex-1 overflow-hidden relative" 
+        <div
+          className="flex-1 overflow-hidden relative"
           style={{ backgroundColor: '#F0F0F0', cursor: isDragging ? 'grabbing' : 'grab' }}
           onClick={() => setOpenDropdown(null)}
           onMouseDown={handleCanvasMouseDown}
           onMouseMove={handleCanvasMouseMove}
           onMouseUp={handleCanvasMouseUp}
           onMouseLeave={handleCanvasMouseUp}
+          onTouchStart={handleCanvasTouchStart}
+          onTouchMove={handleCanvasTouchMove}
+          onTouchEnd={handleCanvasTouchEnd}
         >
           <div 
             className="absolute top-6 left-6 z-10 flex flex-col gap-3" 
